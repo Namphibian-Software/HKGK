@@ -9,6 +9,7 @@ public class ship : MonoBehaviour
     public float screenBoundary;
     public GameObject shot;
     public alienfactoryscript alienfactory;
+    public float deathtimer;
     void Start()
     {
         transform.position = new Vector3(0, -2.8f,5);
@@ -51,17 +52,37 @@ public class ship : MonoBehaviour
             alienfactory.MakeAlien();
             gamestate.state = gamestate.GameState.GamePlay;
         }
+        if (gamestate.state == gamestate.GameState.Dying)
+        {
+            transform.Rotate(0, 0, Time.deltaTime * 400.0f);
+            deathtimer -= 0.1f;
+            if (deathtimer < 5.0)
+            {
+                GetComponent<Renderer>().enabled = false;
+            }
+            if (deathtimer < 0)
+            {
+                gamestate.state = gamestate.GameState.GamePlay;
+                transform.position = new Vector3(0.0f, -2.8f, 5f);
+                transform.rotation = new Quaternion(transform.rotation.x, transform.rotation.y, 0, transform.rotation.w);
+
+                GetComponent<Renderer>().enabled = true;
+            }
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "ashot")
-        {
-            scoring.lives--;
-            if (scoring.lives == 0)
+        if (gamestate.state == gamestate.GameState.GamePlay)
+            if (other.tag == "ashot")
             {
-                Destroy(other.gameObject);
-                gamestate.state = gamestate.GameState.GameOver;
+            scoring.lives--;
+                deathtimer = 10.0f;
+                gamestate.state = gamestate.GameState.Dying;
+                if (scoring.lives == 0)
+                {
+                    Destroy(other.gameObject);
+                    gamestate.state = gamestate.GameState.GameOver;
+                }
             }
-        }
     }
 }

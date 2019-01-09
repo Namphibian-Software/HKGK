@@ -23,8 +23,11 @@ public class alien : MonoBehaviour
         Vector2 offset = new Vector2(index / 4.0f, 0);
         GetComponent<Renderer>().material.SetTextureScale("_MainTex", size);
         GetComponent<Renderer>().material.SetTextureOffset("_MainTex", offset);
+
         if (Mathf.FloorToInt(Random.value * 10000.0f) % 2000 == 0)
         {
+
+            if (gamestate.state == gamestate.GameState.GamePlay) 
             Instantiate(
             ashot,
             new Vector3(transform.position.x, transform.position.y, 5),
